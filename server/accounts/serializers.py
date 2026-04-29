@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import CharField, ModelSerializer, ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(ModelSerializer):
@@ -30,3 +31,15 @@ class UserSerializer(ModelSerializer):
             'last_name',
         )
         read_only_fields = ('id',)
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        user_data = UserSerializer(user).data
+        for key, value in user_data.items():
+            if key != 'id':
+                token[key] = value
+        return token
