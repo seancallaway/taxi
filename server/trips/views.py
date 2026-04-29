@@ -6,6 +6,8 @@ from trips.serializers import TripSerializer
 
 
 class TripView(ReadOnlyModelViewSet):
+    lookup_field = 'id'
+    lookup_url_kwarg = 'pk'
     permission_classes = [IsAuthenticated,]
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
