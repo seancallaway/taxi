@@ -1,5 +1,6 @@
 from uuid import uuid7
 
+from django.conf import settings
 from django.db import models
 from django.shortcuts import reverse
 
@@ -22,6 +23,20 @@ class Trip(models.Model):
     pick_up_address = models.CharField(max_length=255)
     drop_off_address = models.CharField(max_length=255)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=REQUESTED)
+    driver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='trips_as_driver',
+    )
+    rider = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='trips_as_rider',
+    )
 
     def __str__(self):
         return f'{self.id}'

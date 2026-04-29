@@ -10,6 +10,8 @@ class TripAdmin(admin.ModelAdmin):
         'pick_up_address',
         'drop_off_address',
         'status',
+        'driver',
+        'rider',
         'created',
         'updated',
     )
@@ -19,6 +21,8 @@ class TripAdmin(admin.ModelAdmin):
         'pick_up_address',
         'drop_off_address',
         'status',
+        'driver',
+        'rider',
         'created',
         'updated',
     )
