@@ -2,6 +2,7 @@ from base64 import b64decode
 from json import loads
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -9,13 +10,17 @@ from rest_framework.test import APITestCase
 PASSWORD = 'pAssw0rd!'
 
 
-def create_user(username='test@calnet.us', password=PASSWORD):
-    return get_user_model().objects.create_user(
+def create_user(username='test@calnet.us', password=PASSWORD, group_name='rider'):
+    group, _ = Group.objects.get_or_create(name=group_name)
+    user = get_user_model().objects.create_user(
         username=username,
         first_name='Test',
         last_name='User',
         password=password,
     )
+    user.groups.add(group)
+    user.save()
+    return user
 
 
 class AuthenticationTest(APITestCase):
@@ -27,6 +32,7 @@ class AuthenticationTest(APITestCase):
             'last_name': 'User',
             'password1': PASSWORD,
             'password2': PASSWORD,
+            'group': 'rider',
         })
         user = get_user_model().objects.last()
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -34,6 +40,7 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.data['username'], user.username)
         self.assertEqual(response.data['first_name'], user.first_name)
         self.assertEqual(response.data['last_name'], user.last_name)
+        self.assertEqual(response.data['group'], user.group)
 
     def test_user_can_login(self):
         user = create_user()
